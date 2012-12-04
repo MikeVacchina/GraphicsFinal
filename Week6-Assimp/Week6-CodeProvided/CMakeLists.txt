@@ -1,6 +1,10 @@
 
 include_directories(include)
 include_directories(${ASSIMP_INC})
+include_directories(${GLM_INC})
+include_directories(${GLEW_INC})
+include_directories(${OPENGL_INC})
+include_directories(${GLUT_INC})
 
 file(GLOB_RECURSE SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
 file(GLOB_RECURSE INC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.h)
@@ -12,3 +16,6 @@ endforeach(RF ${RESOURCE_FILES})
 
 add_executable(Week6-CodeProvided ${SRCS} ${INC})
 target_link_libraries(Week6-CodeProvided ${ASSIMP_LIB})
+target_link_libraries(Week6-CodeProvided ${GLUT_LIB})
+target_link_libraries(Week6-CodeProvided ${OPENGL_LIB})
+target_link_libraries(Week6-CodeProvided ${GLEW_LIB})
