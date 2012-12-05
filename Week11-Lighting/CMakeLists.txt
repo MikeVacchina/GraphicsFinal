@@ -1,3 +1,6 @@
 add_subdirectory(Week11-CodeProvided)
 add_subdirectory(Week11-Solution)
-add_subdirectory(Week11-Tutorial)
+add_subdirectory(Week11-Tutorial-Ambient)
+add_subdirectory(Week11-Tutorial-Distant)
+add_subdirectory(Week11-Tutorial-Point)
+add_subdirectory(Week11-Tutorial-Spot)

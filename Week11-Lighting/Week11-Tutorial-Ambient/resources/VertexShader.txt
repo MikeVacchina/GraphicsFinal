@@ -1,0 +1,28 @@
+struct Light
+{
+	vec3 pos;
+	vec3 color;
+	vec3 direction;
+	float falloff;
+};
+
+attribute vec3 v_position;
+attribute vec3 v_color;
+
+varying vec4 color;
+
+uniform mat4 ModelView;
+uniform mat4 Projection;
+
+uniform Light ambientLight;
+
+void main(void)
+{	
+	vec4 pos = (ModelView * vec4(v_position, 1.0));
+	
+	vec3 o_color = v_color * ambientLight.color;
+	
+	color = vec4(o_color.xyz,1.0);
+	
+	gl_Position = Projection * pos;
+}
