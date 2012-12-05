@@ -305,9 +305,9 @@ bool loadObj(const char *filename, Vertex* &obj, int &vertexCount)
 bool initialize()
 {
 	// Set light values
-	spotLight.position[0] = 5.0f;
-	spotLight.position[1] = 5.0f;
-	spotLight.position[2] = 5.0f;
+	spotLight.position[0] = 10.0f;
+	spotLight.position[1] = 10.0f;
+	spotLight.position[2] = 10.0f;
 
 	spotLight.direction[0] = -1.0f;
 	spotLight.direction[1] = -1.0f;
@@ -317,7 +317,7 @@ bool initialize()
 	spotLight.color[1] = 1.0f;
 	spotLight.color[2] = 1.0f;
 
-	spotLight.fov = 30.0;
+	spotLight.fov = 30.0/180.0*M_PI;
 
     // Initialize geometry and shaders for this example
 
