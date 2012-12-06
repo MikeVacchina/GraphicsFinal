@@ -1,0 +1,109 @@
+struct Light
+{
+	vec3 position;
+	vec3 color;
+	vec3 direction;
+	float fov;
+	int on;
+};
+
+attribute vec3 v_position;
+attribute vec3 v_color;
+attribute vec3 v_norm;
+
+varying vec4 color;
+
+uniform vec4 DP, SP;
+uniform float shininess;
+
+uniform mat4 ModelView;
+uniform mat4 Projection;
+
+uniform Light spotLight;
+uniform Light pointLight;
+uniform Light distantLight;
+uniform Light ambientLight;
+
+void main(void)
+{	
+	vec4 pos = (ModelView * vec4(v_position.xyz, 1.0));
+	
+	vec3 N = normalize( (ModelView * vec4(v_norm, 0.0)).xyz );
+	vec3 E = normalize(-pos.xyz);
+	
+	vec4 sl_color = vec4(0.0,0.0,0.0,1.0);
+	vec4 pl_color = vec4(0.0,0.0,0.0,1.0);
+	vec4 dl_color = vec4(0.0,0.0,0.0,1.0);
+	vec4 al_color = vec4(0.0,0.0,0.0,1.0);
+	
+	if(spotLight.on==1)
+	{	
+		vec3 o_direction = normalize(pos - spotLight.position);
+		vec3 l_direction = normalize(spotLight.direction);
+		
+		float theda = acos(dot(o_direction,l_direction));
+		
+		if(theda < spotLight.fov)
+		{
+			vec3 L = normalize(spotLight.position.xyz - pos.xyz);
+			vec3 H = normalize(L+E);
+			
+			float Kd = max(dot(L,N),0.0);
+			
+			vec4 diffuse = Kd * DP;
+			
+			float Ks = pow(max(dot(N,H),0.0),shininess);
+			
+			vec4 specular = Ks * SP;
+			
+			if(dot(L,N) < 0.0) 
+				specular = vec4(0.0,0.0,0.0,1.0);
+
+			sl_color = vec4(spotLight.color.xyz,1.0)*(diffuse + specular);
+		}
+	}
+	if(pointLight.on==1)
+	{	
+		vec3 L = normalize(pointLight.position.xyz - pos.xyz);
+		vec3 H = normalize(L+E);
+		
+		float Kd = max(dot(L,N),0.0);
+		
+		vec4 diffuse = Kd * DP;
+		
+		float Ks = pow(max(dot(N,H),0.0),shininess);
+		
+		vec4 specular = Ks * SP;
+		
+		if(dot(L,N) < 0.0) 
+			specular = vec4(0.0,0.0,0.0,1.0);
+
+		pl_color = vec4(pointLight.color.xyz,1.0)*(diffuse + specular);
+	}
+	if(distantLight.on==1)
+	{
+		vec3 L = normalize(-distantLight.direction.xyz);
+		vec3 H = normalize(L+E);
+		
+		float Kd = max(dot(L,N),0.0);
+		
+		vec4 diffuse = Kd * DP;
+		
+		float Ks = pow(max(dot(N,H),0.0),shininess);
+		
+		vec4 specular = Ks * SP;
+		
+		if(dot(L,N) < 0.0) 
+			specular = vec4(0.0,0.0,0.0,1.0);
+
+		dl_color = vec4(distantLight.color.xyz,1.0)*(diffuse + specular);
+	}
+	if(ambientLight.on==1)
+	{
+		al_color = vec4(ambientLight.color.xyz,1.0);
+	}
+	
+	color = vec4(v_color.xyz,1.0)*(sl_color+pl_color+dl_color+al_color);
+		
+	gl_Position = Projection * pos;
+}
