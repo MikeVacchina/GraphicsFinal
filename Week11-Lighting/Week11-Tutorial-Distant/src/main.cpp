@@ -29,10 +29,8 @@ struct Vertex
 };
 struct Light
 {
-	GLfloat position[3];
 	GLfloat color[3];
 	GLfloat direction[3];
-	GLfloat fov;
 };
 
 //--Evil Global variables

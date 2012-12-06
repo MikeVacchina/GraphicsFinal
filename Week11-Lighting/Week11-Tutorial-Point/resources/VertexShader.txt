@@ -2,8 +2,6 @@ struct Light
 {
 	vec3 position;
 	vec3 color;
-	vec3 direction;
-	float falloff;
 };
 
 attribute vec3 v_position;
