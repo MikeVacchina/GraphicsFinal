@@ -1,3 +1,7 @@
+// For a spot light the properties needed are the position, color, direction, and fov of the light
+// The position denotes where the light is located in camera's coordinate
+// The color is the color that the light emits 
+// The fov is the field of view that spot light emits light in a cone like matter
 struct Light
 {
 	vec3 position;
@@ -6,35 +10,49 @@ struct Light
 	float fov;
 };
 
+// Vertex position, color, and normal passed in to the vertex shader
 attribute vec3 v_position;
 attribute vec3 v_color;
 attribute vec3 v_norm;
 
+// Color output that goes to the fragment shader
 varying vec4 color;
 
+// Object material parameters that effects how light interacts with the object
 uniform vec4 DP, SP;
 uniform float shininess;
 
+// For lighting everything needs to be in the eye coordinate system
+// As such we divide up the MVP matrix into MV and P
+// MV puts the objects into the camera (eye or view) coordinate system
 uniform mat4 ModelView;
 uniform mat4 Projection;
 
+// The light itself
 uniform Light spotLight;
 
 void main(void)
 {	
+	// Get the pos of the vertex in camera's coordinate system
 	vec4 pos = (ModelView * vec4(v_position.xyz, 1.0));
 	
+	// Get the normal of the vertex in camera's coordinate system
 	vec3 N = normalize( (ModelView * vec4(v_norm, 0.0)).xyz );
 	
+	// Get a vector that points from the light's position to the vertex
 	vec3 o_direction = normalize(pos.xyz - spotLight.position);
+	// Get a vector that points in the direction that the light is facing
 	vec3 l_direction = normalize(spotLight.direction);
 	
+	// Get the angle between the two vectors above
 	float theda = acos(dot(o_direction,l_direction));
 	
 	vec4 l_color = vec4(0.0,0.0,0.0,1.0);
 	
+	// Determine if the vertex is in the field of view of the spot light
 	if(theda < spotLight.fov)
 	{
+		// Apply phong model lighting to the vertex
 		vec3 L = normalize(spotLight.position.xyz - pos.xyz);
 		vec3 E = normalize(-pos.xyz);
 		vec3 H = normalize(L+E);
@@ -50,10 +68,13 @@ void main(void)
 		if(dot(L,N) < 0.0) 
 			specular = vec4(0.0,0.0,0.0,1.0);
 
+		// Combine the diffuse and specular lighting with the color emitted by the light
 		l_color = vec4(spotLight.color.xyz,1.0)*(diffuse + specular);
 	}
 	
+	// Combine the color of the vertex with the colors emitted by the light
 	color = vec4(v_color.xyz,1.0)*l_color;
-		
+	
+	// Finish putting the vertex position in the required coordinate system
 	gl_Position = Projection * pos;
 }

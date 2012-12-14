@@ -1,25 +1,37 @@
+// For an ambient light the only property of the light that is needed is the color
+// This color is directly applied to the objects
 struct Light
 {
 	vec3 color;
 };
 
+// Vertex position and color passed in to the vertex shader
 attribute vec3 v_position;
 attribute vec3 v_color;
 
+// Color output that goes to the fragment shader
 varying vec4 color;
 
+// For lighting everything needs to be in the eye coordinate system
+// As such we divide up the MVP matrix into MV and P
+// MV puts the objects into the camera (eye or view) coordinate system
 uniform mat4 ModelView;
 uniform mat4 Projection;
 
+// The light itself
 uniform Light ambientLight;
 
 void main(void)
-{	
+{
+	// Get the pos of the vertex in camera's coordinate system
 	vec4 pos = (ModelView * vec4(v_position, 1.0));
 	
+	// Combine the color of the vertex with the light's color
 	vec3 o_color = v_color * ambientLight.color;
 	
+	// Copy the color to the output color variable
 	color = vec4(o_color.xyz,1.0);
 	
+	// Finish putting the vertex position in the required coordinate system
 	gl_Position = Projection * pos;
 }
